@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            width: 90%;
+            max-width: 700px;
+            color: #2d3436;
+            animation: glowBorder 2s infinite alternate;
+        }
+
+        @keyframes glowBorder {
+            from { border-color: rgba(0, 206, 201, 0.3); }
+            to { border-color: rgba(0, 184, 148, 0.6); }
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(90deg, #00cec9, #0984e3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #task-input, #due-date, #priority, #category {
+            padding: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            flex: 1;
+            min-width: 160px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #2d3436;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #task-input:focus, #due-date:focus, #priority:focus, #category:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
+            outline: none;
+        }
+
+        #add-task-btn {
+            padding: 14px 25px;
+            background: linear-gradient(90deg, #00cec9, #00b894);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #add-task-btn::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { width: 0; }
+            50% { width: 100%; }
+            100% { width: 0; }
+        }
+
+        #add-task-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 206, 201, 0.7);
+        }
+
+        #add-task-btn:active {
+            transform: scale(0.98);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            margin-bottom: 18px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-text {
+            margin: 0 15px;
+            font-weight: 500;
+            color: #2d3436;
+        }
+
+        .due-date, .priority, .category {
+            font-size: 0.95em;
+            color: #636e72;
+            margin-left: 12px;
+        }
+
+        .completed .task-text {
+            text-decoration: line-through;
+            color: #b2bec3;
+            animation: fadeOut 0.5s;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .edit-btn {
+            color: #ff9f43;
+        }
+
+        .edit-btn::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background: #ff9f43;
+            transition: width 0.3s, left 0.3s;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px) scale(1.2);
+            box-shadow: 0 0 10px rgba(255, 159, 67, 0.5);
+        }
+
+        .edit-btn:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .delete-btn {
+            color: #ff6b6b;
+        }
+
+        .delete-btn::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background: #ff6b6b;
+            transition: width 0.3s, left 0.3s;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px) scale(1.2);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        .delete-btn:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #dfe6e9, #b2bec3);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.5);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(90deg, #00cec9, #00b894);
+            color: white;
+        }
+
+        .filter-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 206, 201, 0.4);
+        }
+
+        #clear-completed {
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #ff6b6b, #e74c3c);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #clear-completed::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.5);
+            animation: shimmer 2s infinite;
+        }
+
+        #clear-completed:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
+        }
+
+        #task-count {
+            font-size: 0.95em;
+            color: #636e72;
+            font-weight: 500;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .input-section {
+                flex-direction: column;
+            }
+
+            #task-input, #due-date, #priority, #category {
+                width: 100%;
+            }
+
+            .filters {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <div class="input-section">
+            <input type="text" id="task-input" placeholder="Enter task...">
+            <input type="date" id="due-date">
+            <select id="priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <select id="category">
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Other">Other</option>
+            </select>
+            <button id="add-task-btn">Add Task</button>
+        </div>
+        <div class="filters">
+            <div>
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+            <div>
+                <span id="task-count">0 tasks left</span>
+                <button id="clear-completed">Clear Completed</button>
+            </div>
+        </div>
+        <ul id="task-list"></ul>
+    </div>
+
+    <script>
+        const taskInput = document.getElementById('task-input');
+        const dueDateInput = document.getElementById('due-date');
+        const prioritySelect = document.getElementById('priority');
+        const categorySelect = document.getElementById('category');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const taskList = document.getElementById('task-list');
+        const taskCount = document.getElementById('task-count');
+        const clearCompletedBtn = document.getElementById('clear-completed');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [
+            { text: "Complete project proposal", dueDate: "2025-09-20", priority: "High", category: "Work", completed: false },
+            { text: "Buy groceries", dueDate: "2025-09-21", priority: "Medium", category: "Personal", completed: false },
+            { text: "Schedule team meeting", dueDate: "2025-09-22", priority: "Low", category: "Work", completed: true },
+            { text: "Review code changes", dueDate: "2025-09-20", priority: "High", category: "Work", completed: false },
+            { text: "Call family", dueDate: "2025-09-21", priority: "Medium", category: "Personal", completed: false },
+            { text: "Pay bills", dueDate: "2025-09-22", priority: "High", category: "Personal", completed: true },
+            { text: "Read tech article", dueDate: "2025-09-23", priority: "Low", category: "Work", completed: false },
+            { text: "Plan weekend trip", dueDate: "2025-09-24", priority: "Medium", category: "Personal", completed: false }
+        ];
+        let filter = 'all';
+
+        function renderTasks() {
+            taskList.innerHTML = '';
+            let filteredTasks = tasks.filter(task => {
+                if (filter === 'active') return !task.completed;
+                if (filter === 'completed') return task.completed;
+                return true;
+            });
+
+            filteredTasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.className = task.completed ? 'completed' : '';
+                li.innerHTML = `
+                    <input type="checkbox" ${task.completed ? 'checked' : ''}>
+                    <div class="task-content">
+                        <span class="task-text">${task.text}</span>
+                        <span class="due-date">Due: ${task.dueDate}</span>
+                        <span class="priority">(${task.priority})</span>
+                        <span class="category">[${task.category}]</span>
+                    </div>
+                    <div class="actions">
+                        <button class="edit-btn">&#9998;</button>
+                        <button class="delete-btn">&#10060;</button>
+                    </div>
+                `;
+                const checkbox = li.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', () => toggleComplete(index));
+                const editBtn = li.querySelector('.edit-btn');
+                editBtn.addEventListener('click', () => editTask(index));
+                const deleteBtn = li.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => deleteTask(index));
+                taskList.appendChild(li);
+
+                // Due date notification
+                if (!task.completed && task.dueDate) {
+                    const now = new Date();
+                    const due = new Date(task.dueDate);
+                    const timeDiff = due - now;
+                    if (timeDiff > 0 && timeDiff <= 24 * 60 * 60 * 1000) { // Within 24 hours
+                        setTimeout(() => alert(Reminder: "${task.text}" is due today!), timeDiff);
+                    }
+                }
+            });
+
+            updateTaskCount();
+            saveTasks();
+        }
+
+        function addTask() {
+            const text = taskInput.value.trim();
+            const dueDate = dueDateInput.value;
+            const priority = prioritySelect.value;
+            const category = categorySelect.value;
+            if (text && !addTaskBtn.disabled) {
+                addTaskBtn.disabled = true;
+                tasks.push({ text, dueDate, priority, category, completed: false });
+                taskInput.value = '';
+                dueDateInput.value = '';
+                renderTasks();
+                setTimeout(() => addTaskBtn.disabled = false, 500);
+            }
+        }
+
+        function toggleComplete(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+
+        function editTask(index) {
+            const newText = prompt('Edit task:', tasks[index].text);
+            const newDueDate = prompt('Edit due date (YYYY-MM-DD):', tasks[index].dueDate);
+            const newPriority = prompt('Edit priority (Low/Medium/High):', tasks[index].priority);
+            const newCategory = prompt('Edit category (Work/Personal/Other):', tasks[index].category);
+            if (newText && newDueDate && newPriority && newCategory) {
+                tasks[index] = { ...tasks[index], text: newText.trim(), dueDate: newDueDate, priority: newPriority, category: newCategory };
+                renderTasks();
+            }
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function clearCompleted() {
+            tasks = tasks.filter(task => !task.completed);
+            renderTasks();
+        }
+
+        function updateTaskCount() {
+            const activeTasks = tasks.filter(task => !task.completed).length;
+            taskCount.textContent = ${activeTasks} tasks left;
+        }
+
+        function setFilter(newFilter) {
+            filter = newFilter;
+            filterButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filter));
+            renderTasks();
+        }
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        addTaskBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', e => { if (e.key === 'Enter') addTask(); });
+        clearCompletedBtn.addEventListener('click', clearCompleted);
+        filterButtons.forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter)));
+
+        renderTasks();
+    </script>
+</body>
+</html>
